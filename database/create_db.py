@@ -38,6 +38,7 @@ def create_data(db):
             db.session.add_all(new_genres)
             db.session.add_all(new_directors)
             db.session.commit()
+            db.session.execute('VACUUM')
             db.session.close()
 
         print("\nDatabase regenerated successfully!")

@@ -5,9 +5,9 @@
 
 
 from flask import Flask
+from flask_restx import Api
 
-from set_db import db
-from set_api import api
+from database.set_db import db
 from database.create_db import create_data
 
 from views.movies import movies_ns
@@ -26,15 +26,16 @@ def create_app(config_obj):
 
 def initialize_extensions(app):
     db.init_app(app)
-    api.init_app(app)
+
+    api = Api(app)
     api.add_namespace(movies_ns)
     api.add_namespace(directors_ns)
     api.add_namespace(genres_ns)
+
     with app.app_context():
         create_data(db)
 
 
-application = create_app(Config)
-
 if __name__ == '__main__':
+    application = create_app(Config)
     application.run(host='localhost', port=5000)

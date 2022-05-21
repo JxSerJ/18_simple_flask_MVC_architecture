@@ -2,7 +2,7 @@
 # (но не с базой, с базой мы работает в классе DAO)
 
 
-from set_db import db
+from database.set_db import db
 from marshmallow import Schema, fields
 
 
