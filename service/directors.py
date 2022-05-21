@@ -3,97 +3,97 @@
 # но чаще всего будет какая-то логика обработки данных сейчас или в будущем.
 
 
-from dao.movies import MovieDAO
-from dao.model.movies import Movie, MovieSchema
+from dao.directors import DirectorDAO
+from dao.model.directors import Director, DirectorSchema
 from service.validator import validator
 
-movie_schema = MovieSchema()
+director_schema = DirectorSchema()
 
 
-class MovieService:
-    def __init__(self, dao: MovieDAO):
-        self.movie_dao = dao
+class DirectorService:
+    def __init__(self, dao: DirectorDAO):
+        self.director_dao = dao
 
-    def get_all(self, director_id: int = None, genre_id: int = None, year: int = None):
-        result_data = self.movie_dao.get_all(director_id=director_id, genre_id=genre_id, year=year)
+    def get_all(self):
+        result_data = self.director_dao.get_all()
         if not result_data:
             return f"Data not found. Empty database.", 404
         elif result_data == 500:
             return f"Database error", 500
         return result_data, 200
 
-    def get_one(self, movie_id: int):
-        result_data = self.movie_dao.get_one(movie_id)
+    def get_one(self, director_id: int):
+        result_data = self.director_dao.get_one(director_id)
         if not result_data:
-            return f"Data ID: {movie_id} not found.", 404
+            return f"Data ID: {director_id} not found.", 404
         elif result_data == 500:
             return f"Database error", 500
         return result_data, 200
 
     def create(self, data):
 
-        validation_result = validator("POST", data, Movie, movie_schema)
+        validation_result = validator("POST", data, Director, director_schema)
         if validation_result[0]:
             return validation_result[1], validation_result[2]
         else:
-            result_data = self.movie_dao.create(data)
+            result_data = self.director_dao.create(data)
             if result_data == 500:
                 return f"Database error", 500
             return result_data, 201
 
-    def update(self, movie_id: int, data):
+    def update(self, director_id: int, data):
 
-        validation_result = validator("PUT", data, Movie, movie_schema)
+        validation_result = validator("PUT", data, Director, director_schema)
         if validation_result[0]:
             return validation_result[1], validation_result[2]
         else:
-            movie = self.get_one(movie_id)
-            if not movie:
-                return f"Data ID: {movie_id} not found.", 404
-            elif movie[1] == 404:
-                return movie
-            elif movie == 500:
+            director = self.get_one(director_id)
+            if not director:
+                return f"Data ID: {director_id} not found.", 404
+            elif director[1] == 404:
+                return director
+            elif director == 500:
                 return f"Database error", 500
             else:
                 for k, v in data.items():
-                    setattr(movie[0], k, v)
+                    setattr(director[0], k, v)
 
-                result = self.movie_dao.update(movie[0])
+                result = self.director_dao.update(director[0])
                 if result == 500:
                     return f"Database error", 500
                 return result, 200
 
-    def update_partial(self, movie_id: int, data):
+    def update_partial(self, director_id: int, data):
 
-        validation_result = validator("PATCH", data, Movie, movie_schema)
+        validation_result = validator("PATCH", data, Director, director_schema)
         if validation_result[0]:
             return validation_result[1], validation_result[2]
         else:
-            movie = self.get_one(movie_id)
-            if not movie:
-                return f"Data ID: {movie_id} not found.", 404
-            elif movie[1] == 404:
-                return movie
-            elif movie == 500:
+            director = self.get_one(director_id)
+            if not director:
+                return f"Data ID: {director_id} not found.", 404
+            elif director[1] == 404:
+                return director
+            elif director == 500:
                 return f"Database error", 500
             else:
                 for k, v in data.items():
-                    setattr(movie[0], k, v)
+                    setattr(director[0], k, v)
 
-                result = self.movie_dao.update(movie[0])
+                result = self.director_dao.update(director[0])
                 if result == 500:
                     return f"Database error", 500
                 return result, 200
 
-    def delete(self, movie_id: int):
+    def delete(self, director_id: int):
 
-        query = self.get_one(movie_id)
+        query = self.get_one(director_id)
         if query[1] == 404:
-            return f"Data ID: {movie_id} not found.", 404
+            return f"Data ID: {director_id} not found.", 404
         elif query == 500:
             return f"Database error", 500
         else:
-            result = self.movie_dao.delete(movie_id)
+            result = self.director_dao.delete(director_id)
             if result == 500:
                 return f"Database error", 500
-            return f"Data ID: {movie_id} was deleted successfully.", 200
+            return f"Data ID: {director_id} was deleted successfully.", 200

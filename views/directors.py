@@ -1,33 +1,78 @@
 # Здесь контроллеры/хендлеры/представления для обработки запросов (flask ручки).
 # Сюда импортируются сервисы из пакета service.
 
-
+from flask import request
 from flask_restx import Resource, Namespace
 
+from container import director_service
+from dao.model.directors import DirectorSchema
+
+
 directors_ns = Namespace('directors')
+
+director_schema = DirectorSchema()
+directors_schema = DirectorSchema(many=True)
 
 
 @directors_ns.route('/')
 class DirectorsView(Resource):
 
     def get(self):
-        return "get_all", 200
+        director_id = request.args.get('director_id')
+        genre_id = request.args.get('genre_id')
+        year = request.args.get('year')
+
+        result_data = director_service.get_all()
+
+        if result_data[1] in [404, 500]:
+            return result_data
+
+        result = directors_schema.dump(result_data[0])
+        return result, 200
 
     def post(self):
-        return "post", 201
+        request_data = request.json
+        result_data = director_service.create(request_data)
+
+        if result_data[1] in [422, 500]:
+            return result_data
+
+        result = director_schema.dump(result_data[0])
+        return result, 200
 
 
 @directors_ns.route('/<int:dir_id>')
 class DirectorView(Resource):
 
     def get(self, dir_id: int):
-        return "get_one", 200
+        result_data = director_service.get_one(dir_id)
+
+        if result_data[1] in [404, 500]:
+            return result_data
+
+        result = director_schema.dump(result_data[0])
+        return result, 200
 
     def put(self, dir_id: int):
-        return "put", 200
+        request_data = request.json
+        result_data = director_service.update(dir_id, request_data)
+
+        if result_data[1] in [404, 500, 422]:
+            return result_data
+
+        result = director_schema.dump(result_data[0])
+        return result, 200
 
     def patch(self, dir_id: int):
-        return "patch", 200
+        request_data = request.json
+        result_data = director_service.update_partial(dir_id, request_data)
+
+        if result_data[1] in [500, 422, 404]:
+            return result_data
+
+        result = director_schema.dump(result_data[0])
+        return result, 200
 
     def delete(self, dir_id: int):
-        return "delete", 200
+        result_data = director_service.delete(dir_id)
+        return result_data
