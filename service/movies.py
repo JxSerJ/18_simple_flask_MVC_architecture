@@ -19,8 +19,8 @@ class MovieService:
     def __init__(self, dao: MovieDAO):
         self.movie_dao = dao
 
-    def get_movies_all(self):
-        result = self.movie_dao.get_all()
+    def get_movies_all(self, director_id: int = None, genre_id: int = None, year: int = None):
+        result = self.movie_dao.get_all(director_id=director_id, genre_id=genre_id, year=year)
 
         return result
 

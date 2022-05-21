@@ -18,7 +18,11 @@ movies_schema = MovieSchema(many=True)
 class MoviesView(Resource):
 
     def get(self):
-        result_data = movie_service.get_movies_all()
+        director_id = request.args.get('director_id')
+        genre_id = request.args.get('genre_id')
+        year = request.args.get('year')
+
+        result_data = movie_service.get_movies_all(director_id=director_id, genre_id=genre_id, year=year)
         result = movies_schema.dump(result_data)
         return result, 200
 

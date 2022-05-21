@@ -1,7 +1,6 @@
 # Это файл для классов доступа к данным (Data Access Object). Здесь должен быть класс с методами доступа к данным.
 # В методах можно построить сложные запросы к БД.
 
-
 from dao.model.movies import Movie, MovieSchema
 
 movie_schema = MovieSchema()
@@ -13,9 +12,20 @@ class MovieDAO:
     def __init__(self, session):
         self.session = session
 
-    def get_all(self):
-        query_data = self.session.query(Movie).all()
-        return query_data
+    def get_all(self, director_id: int = None, genre_id: int = None, year: int = None):
+
+        query = self.session.query(Movie)
+
+        if director_id:
+            query = query.filter(Movie.director_id == director_id)
+        if genre_id:
+            query = query.filter(Movie.genre_id == genre_id)
+        if year:
+            query = query.filter(Movie.year == year)
+
+        result_data = query.all()
+
+        return result_data
 
     def get_one(self, movie_id: int):
         query_data = self.session.query(Movie).get(movie_id)
