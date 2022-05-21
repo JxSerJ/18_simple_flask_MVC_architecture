@@ -26,7 +26,6 @@ class MovieDAO:
 
         self.session.add(new_movie)
         self.session.commit()
-
         return new_movie
 
     def update(self, movie_id: int, data):
@@ -52,5 +51,5 @@ class MovieDAO:
     def delete(self, movie_id: int):
         movie = self.get_one(movie_id)
         self.session.delete(movie)
-
-
+        self.session.execute('VACUUM')
+        self.session.commit()
