@@ -44,4 +44,5 @@ def create_data(db):
         print("\nDatabase regenerated successfully!")
 
     except Exception as err:
-        print(f"Error: {err}")
+        print(f"Database error: {err} \n\n"
+              f"Database regeneration incomplete. Data may be corrupted!")

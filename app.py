@@ -32,8 +32,11 @@ def initialize_extensions(app):
     api.add_namespace(directors_ns)
     api.add_namespace(genres_ns)
 
-    with app.app_context():
-        create_data(db)
+    if Config.REGENERATE_DB_ON_START:
+        with app.app_context():
+            create_data(db)
+    else:
+        print("Database regeneration skipped!")
 
 
 if __name__ == '__main__':
