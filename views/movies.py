@@ -34,7 +34,7 @@ class MoviesView(Resource):
         request_data = request.json
         result_data = movie_service.create(request_data)
 
-        if result_data[1] in [422, 500]:
+        if result_data[1] in [422, 500, 400]:
             return result_data
 
         result = movie_schema.dump(result_data[0])

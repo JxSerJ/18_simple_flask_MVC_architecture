@@ -1,26 +1,26 @@
 # Это файл для классов доступа к данным (Data Access Object). Здесь должен быть класс с методами доступа к данным.
 # В методах можно построить сложные запросы к БД.
 
-from dao.model.directors import Director
+from dao.model.genres import Genre
 
 
 # CRUD
-class DirectorDAO:
+class GenreDAO:
     def __init__(self, session):
         self.session = session
 
     def get_all(self):
         try:
-            result_data = self.session.query(Director).all()
+            result_data = self.session.query(Genre).all()
             return result_data
 
         except Exception as err:
             print(f'Database error: {err}')
             return 500
 
-    def get_one(self, director_id: int):
+    def get_one(self, genre_id: int):
         try:
-            query_data = self.session.query(Director).get(director_id)
+            query_data = self.session.query(Genre).get(genre_id)
             return query_data
 
         except Exception as err:
@@ -29,30 +29,30 @@ class DirectorDAO:
 
     def create(self, data):
         try:
-            new_director = Director(**data)
+            new_genre = Genre(**data)
 
-            self.session.add(new_director)
+            self.session.add(new_genre)
             self.session.commit()
-            return new_director
+            return new_genre
 
         except Exception as err:
             print(f'Database error: {err}')
             return 500
 
-    def update(self, director):
+    def update(self, genre):
         try:
-            self.session.add(director)
+            self.session.add(genre)
             self.session.commit()
-            return director
+            return genre
 
         except Exception as err:
             print(f'Database error: {err}')
             return 500
 
-    def delete(self, director_id: int):
+    def delete(self, genre_id: int):
         try:
-            director = self.get_one(director_id)
-            self.session.delete(director)
+            genre = self.get_one(genre_id)
+            self.session.delete(genre)
             self.session.execute('VACUUM')
             self.session.commit()
 

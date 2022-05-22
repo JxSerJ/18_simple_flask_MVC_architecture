@@ -18,9 +18,6 @@ directors_schema = DirectorSchema(many=True)
 class DirectorsView(Resource):
 
     def get(self):
-        director_id = request.args.get('director_id')
-        genre_id = request.args.get('genre_id')
-        year = request.args.get('year')
 
         result_data = director_service.get_all()
 
@@ -34,7 +31,7 @@ class DirectorsView(Resource):
         request_data = request.json
         result_data = director_service.create(request_data)
 
-        if result_data[1] in [422, 500]:
+        if result_data[1] in [422, 500, 400]:
             return result_data
 
         result = director_schema.dump(result_data[0])

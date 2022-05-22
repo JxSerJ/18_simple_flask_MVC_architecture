@@ -1,33 +1,75 @@
 # Здесь контроллеры/хендлеры/представления для обработки запросов (flask ручки).
 # Сюда импортируются сервисы из пакета service.
 
-
+from flask import request
 from flask_restx import Resource, Namespace
+
+from container import genre_service
+from dao.model.genres import GenreSchema
+
 
 genres_ns = Namespace('genres')
 
+genre_schema = GenreSchema()
+genres_schema = GenreSchema(many=True)
+
 
 @genres_ns.route('/')
-class MoviesView(Resource):
+class GenresView(Resource):
 
     def get(self):
-        return "get_all", 200
+
+        result_data = genre_service.get_all()
+
+        if result_data[1] in [404, 500]:
+            return result_data
+
+        result = genres_schema.dump(result_data[0])
+        return result, 200
 
     def post(self):
-        return "post", 201
+        request_data = request.json
+        result_data = genre_service.create(request_data)
+
+        if result_data[1] in [422, 500, 400]:
+            return result_data
+
+        result = genre_schema.dump(result_data[0])
+        return result, 200
 
 
 @genres_ns.route('/<int:genre_id>')
-class MovieView(Resource):
+class GenreView(Resource):
 
     def get(self, genre_id: int):
-        return "get_one", 200
+        result_data = genre_service.get_one(genre_id)
+
+        if result_data[1] in [404, 500]:
+            return result_data
+
+        result = genre_schema.dump(result_data[0])
+        return result, 200
 
     def put(self, genre_id: int):
-        return "put", 200
+        request_data = request.json
+        result_data = genre_service.update(genre_id, request_data)
+
+        if result_data[1] in [404, 500, 422]:
+            return result_data
+
+        result = genre_schema.dump(result_data[0])
+        return result, 200
 
     def patch(self, genre_id: int):
-        return "patch", 200
+        request_data = request.json
+        result_data = genre_service.update_partial(genre_id, request_data)
+
+        if result_data[1] in [500, 422, 404]:
+            return result_data
+
+        result = genre_schema.dump(result_data[0])
+        return result, 200
 
     def delete(self, genre_id: int):
-        return "delete", 200
+        result_data = genre_service.delete(genre_id)
+        return result_data
