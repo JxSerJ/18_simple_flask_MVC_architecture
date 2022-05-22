@@ -1,7 +1,7 @@
 # Здесь контроллеры/хендлеры/представления для обработки запросов (flask ручки).
 # Сюда импортируются сервисы из пакета service.
 
-from flask import request
+from flask import request, jsonify
 from flask_restx import Resource, Namespace
 
 from container import director_service
@@ -35,7 +35,11 @@ class DirectorsView(Resource):
             return result_data
 
         result = director_schema.dump(result_data[0])
-        return result, 200
+        data_id = result["id"]
+        response = jsonify(result)
+        response.status_code = 201
+        response.headers['location'] = f'/{directors_ns.name}/{data_id}'
+        return response
 
 
 @directors_ns.route('/<int:dir_id>')
