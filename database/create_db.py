@@ -15,7 +15,6 @@ def create_data(db):
     try:
         with current_app.app_context():
             db.drop_all()
-            db.session.execute('VACUUM')
             db.create_all()
 
             with open(INITIAL_DATA_PATH, 'r', encoding='UTF-8') as file:
@@ -38,7 +37,6 @@ def create_data(db):
             db.session.add_all(new_genres)
             db.session.add_all(new_directors)
             db.session.commit()
-            db.session.execute('VACUUM')
             db.session.close()
 
         print("\nDatabase regenerated successfully!")
