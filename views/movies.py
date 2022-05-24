@@ -71,6 +71,16 @@ class MovieView(Resource):
             request_data = movie_schema.load(request_data)
         except ValidationError as err:
             return f"{err}", 400
+        # check if all keys acquired
+        schema_keys = set(movie_schema.fields.keys())
+        schema_keys.remove('id')
+        data_keys = request_data.keys()
+        if 'id' in data_keys:
+            data_keys = set(data_keys.remove('id'))
+        else:
+            data_keys = set(data_keys)
+        if data_keys != schema_keys:
+            return "Not all keys acquired", 400
 
         result_data = movie_service.update(mov_id, request_data)
 
