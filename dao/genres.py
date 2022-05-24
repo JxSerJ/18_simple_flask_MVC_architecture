@@ -10,52 +10,33 @@ class GenreDAO:
         self.session = session
 
     def get_all(self):
-        try:
-            result_data = self.session.query(Genre).all()
-            return result_data
 
-        except Exception as err:
-            print(f'Database error: {err}')
-            return 500
+        result_data = self.session.query(Genre).all()
+        return result_data
 
     def get_one(self, genre_id: int):
-        try:
-            query_data = self.session.query(Genre).get(genre_id)
-            return query_data
 
-        except Exception as err:
-            print(f'Database error: {err}')
-            return 500
+        result_data = self.session.query(Genre).get(genre_id)
+        return result_data
 
     def create(self, data):
-        try:
-            new_genre = Genre(**data)
 
-            self.session.add(new_genre)
-            self.session.commit()
-            return new_genre
+        new_genre = Genre(**data)
 
-        except Exception as err:
-            print(f'Database error: {err}')
-            return 500
+        self.session.add(new_genre)
+        self.session.commit()
+        return new_genre
 
-    def update(self, genre):
-        try:
-            self.session.add(genre)
-            self.session.commit()
-            return genre
+    def update(self, genre, data):
 
-        except Exception as err:
-            print(f'Database error: {err}')
-            return 500
+        for k, v in data.items():
+            setattr(genre, k, v)
+        self.session.add(genre)
+        self.session.commit()
+        return genre
 
     def delete(self, genre_id: int):
-        try:
-            genre = self.get_one(genre_id)
-            self.session.delete(genre)
-            self.session.execute('VACUUM')
-            self.session.commit()
 
-        except Exception as err:
-            print(f'Database error: {err}')
-            return 500
+        genre = self.get_one(genre_id)
+        self.session.delete(genre)
+        self.session.commit()

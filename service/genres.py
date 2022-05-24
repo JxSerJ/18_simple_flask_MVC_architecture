@@ -17,83 +17,41 @@ class GenreService:
     def get_all(self):
         result_data = self.genre_dao.get_all()
         if not result_data:
-            return f"Data not found. Empty database.", 404
-        elif result_data == 500:
-            return f"Database error", 500
-        return result_data, 200
+            return {"result": f"Data not found. Empty database.", "status_code": 404}
+        return {"result": result_data, "status_code": 200}
 
     def get_one(self, genre_id: int):
         result_data = self.genre_dao.get_one(genre_id)
         if not result_data:
-            return f"Data ID: {genre_id} not found.", 404
-        elif result_data == 500:
-            return f"Database error", 500
-        return result_data, 200
+            return {"result": f"Data ID: {genre_id} not found.", "status_code": 404}
+        return {"result": result_data, "status_code": 200}
 
     def create(self, data):
 
         validation_result = validator("POST", data, Genre, genre_schema)
-        if validation_result[0]:
-            return validation_result[1], validation_result[2]
+        if validation_result['is_error']:
+            return {"result": validation_result["error_message"], "status_code": validation_result["status_code"]}
         else:
             result_data = self.genre_dao.create(data)
-            if result_data == 500:
-                return f"Database error", 500
-            return result_data, 201
+            return {"result": result_data, "status_code": 201}
 
     def update(self, genre_id: int, data):
 
-        validation_result = validator("PUT", data, Genre, genre_schema)
-        if validation_result[0]:
-            return validation_result[1], validation_result[2]
-        else:
-            genre = self.get_one(genre_id)
-            if not genre:
-                return f"Data ID: {genre_id} not found.", 404
-            elif genre[1] == 404:
-                return genre
-            elif genre == 500:
-                return f"Database error", 500
-            else:
-                for k, v in data.items():
-                    setattr(genre[0], k, v)
-
-                result = self.genre_dao.update(genre[0])
-                if result == 500:
-                    return f"Database error", 500
-                return result, 200
+        genre = self.genre_dao.get_one(genre_id)
+        result_data = self.genre_dao.update(genre, data)
+        return {"result": result_data, "status_code": 200}
 
     def update_partial(self, genre_id: int, data):
 
-        validation_result = validator("PATCH", data, Genre, genre_schema)
-        if validation_result[0]:
-            return validation_result[1], validation_result[2]
-        else:
-            genre = self.get_one(genre_id)
-            if not genre:
-                return f"Data ID: {genre_id} not found.", 404
-            elif genre[1] == 404:
-                return genre
-            elif genre == 500:
-                return f"Database error", 500
-            else:
-                for k, v in data.items():
-                    setattr(genre[0], k, v)
-
-                result = self.genre_dao.update(genre[0])
-                if result == 500:
-                    return f"Database error", 500
-                return result, 200
+        genre = self.genre_dao.get_one(genre_id)
+        result_data = self.genre_dao.update(genre, data)
+        return {"result": result_data, "status_code": 200}
 
     def delete(self, genre_id: int):
 
-        query = self.get_one(genre_id)
-        if query[1] == 404:
-            return f"Data ID: {genre_id} not found.", 404
-        elif query == 500:
-            return f"Database error", 500
+        query = self.genre_dao.get_one(genre_id)
+        if not query:
+            return {"result": f"Data ID: {genre_id} not found.", "status_code": 404}
         else:
-            result = self.genre_dao.delete(genre_id)
-            if result == 500:
-                return f"Database error", 500
-            return f"Data ID: {genre_id} was deleted successfully.", 200
+            self.genre_dao.delete(genre_id)
+            return {"result": f"Data ID: {genre_id} was deleted successfully.", "status_code": 200}
