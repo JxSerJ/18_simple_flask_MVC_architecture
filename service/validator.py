@@ -1,12 +1,11 @@
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 from marshmallow import ValidationError
 
 from database.set_db import db
 
 
-def validator(method: str, request_data: Any, Obj: object, Obj_schema: object) \
-        -> tuple[bool, str, int] | tuple[bool, dict[str, int | str | Any], int] | tuple[bool, None, None]:
+def validator(method: str, request_data: Any, Obj: object, Obj_schema: object) -> dict:
     # validating data structure
 
     try:
@@ -32,16 +31,16 @@ def validator(method: str, request_data: Any, Obj: object, Obj_schema: object) \
         error_text_entry = {"PUT": [" full", "required"],
                             "POST": [" full", "required"],
                             "PATCH": ["", "available"]}
-        return True, {"response_status_code": 422,
-                      "response_status": "UNPROCESSABLE ENTITY",
-                      "error_text": "Validation Error. Invalid structure found in request body data. {} request "
-                                    "must contain only{} dataset with valid keys for successful processing. "
-                                    "{} data keys enumerated in corresponding field".format(method,
-                                                                                            error_text_entry[method][0],
-                                                                                            error_text_entry[method][
-                                                                                                1].title()),
-                      f"{error_text_entry[method][1]}_keys": list(movie_keys),
-                      "incorrect_data": err.messages}, 422
+        return {'is_error': True,
+                "error_message": {"response_status_code": 422,
+                                  "response_status": "UNPROCESSABLE ENTITY",
+                                  "error_text": "Validation Error. Invalid structure found in request body data. "
+                                                "{} request must contain only{} dataset with valid keys for successful "
+                                                "processing. {} data keys enumerated in corresponding field"
+                                      .format(method, error_text_entry[method][0], error_text_entry[method][1].title()),
+                                  f"{error_text_entry[method][1]}_keys": list(movie_keys),
+                                  "incorrect_data": err.messages},
+                "status_code": 422}
 
     if method == 'POST':
         # validating if database already contains data
@@ -55,9 +54,14 @@ def validator(method: str, request_data: Any, Obj: object, Obj_schema: object) \
                 query = db.session.query(Obj).filter(Obj.name == request_data['name']).first()
                 db.session.close()
         except Exception:
-            return True, f"Database error.", 500
+            return {'is_error': True,
+                    "error_message": f"Database error.",
+                    "status_code": 500}
+
         query_data = Obj_schema.dump(query)
         if len(query_data) > 0:
-            return True, f"Data already in database. Data ID: {query.id}", 400
+            return {'is_error': True,
+                    "error_message": f"Data already in database. Data ID: {query.id}",
+                    "status_code": 400}
 
-    return False, None, None
+    return {'is_error': False, "error_message": None, "status_code": 200}
