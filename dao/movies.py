@@ -10,61 +10,42 @@ class MovieDAO:
         self.session = session
 
     def get_all(self, director_id: int = None, genre_id: int = None, year: int = None):
-        try:
-            query = self.session.query(Movie)
 
-            if director_id:
-                query = query.filter(Movie.director_id == director_id)
-            if genre_id:
-                query = query.filter(Movie.genre_id == genre_id)
-            if year:
-                query = query.filter(Movie.year == year)
+        query = self.session.query(Movie)
 
-            result_data = query.all()
-            return result_data
+        if director_id:
+            query = query.filter(Movie.director_id == director_id)
+        if genre_id:
+            query = query.filter(Movie.genre_id == genre_id)
+        if year:
+            query = query.filter(Movie.year == year)
 
-        except Exception as err:
-            print(f'Database error: {err}')
-            return 500
+        result_data = query.all()
+        return result_data
 
     def get_one(self, movie_id: int):
-        try:
-            query_data = self.session.query(Movie).get(movie_id)
-            return query_data
 
-        except Exception as err:
-            print(f'Database error: {err}')
-            return 500
+        result_data = self.session.query(Movie).get(movie_id)
+        return result_data
 
     def create(self, data):
-        try:
-            new_movie = Movie(**data)
 
-            self.session.add(new_movie)
-            self.session.commit()
-            return new_movie
+        new_movie = Movie(**data)
 
-        except Exception as err:
-            print(f'Database error: {err}')
-            return 500
+        self.session.add(new_movie)
+        self.session.commit()
+        return new_movie
 
-    def update(self, movie):
-        try:
-            self.session.add(movie)
-            self.session.commit()
-            return movie
+    def update(self, movie, data):
 
-        except Exception as err:
-            print(f'Database error: {err}')
-            return 500
+        for k, v in data.items():
+            setattr(movie, k, v)
+        self.session.add(movie)
+        self.session.commit()
+        return movie
 
     def delete(self, movie_id: int):
-        try:
-            movie = self.get_one(movie_id)
-            self.session.delete(movie)
-            self.session.execute('VACUUM')
-            self.session.commit()
 
-        except Exception as err:
-            print(f'Database error: {err}')
-            return 500
+        movie = self.get_one(movie_id)
+        self.session.delete(movie)
+        self.session.commit()

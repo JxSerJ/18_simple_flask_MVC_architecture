@@ -11,8 +11,8 @@ from database.set_db import db
 from database.create_db import create_data
 
 from views.movies import movies_ns
-from views.directors import directors_ns
-from views.genres import genres_ns
+# from views.directors import directors_ns
+# from views.genres import genres_ns
 
 from config import Config
 
@@ -29,8 +29,8 @@ def initialize_extensions(app):
 
     api = Api(app)
     api.add_namespace(movies_ns)
-    api.add_namespace(directors_ns)
-    api.add_namespace(genres_ns)
+    # api.add_namespace(directors_ns)  # disabled due to refactoring and debug process
+    # api.add_namespace(genres_ns)  # disabled due to refactoring and debug process
 
     if Config.REGENERATE_DB_ON_START:
         with app.app_context():
