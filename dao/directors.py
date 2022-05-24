@@ -10,52 +10,33 @@ class DirectorDAO:
         self.session = session
 
     def get_all(self):
-        try:
-            result_data = self.session.query(Director).all()
-            return result_data
 
-        except Exception as err:
-            print(f'Database error: {err}')
-            return 500
+        result_data = self.session.query(Director).all()
+        return result_data
 
     def get_one(self, director_id: int):
-        try:
-            query_data = self.session.query(Director).get(director_id)
-            return query_data
 
-        except Exception as err:
-            print(f'Database error: {err}')
-            return 500
+        result_data = self.session.query(Director).get(director_id)
+        return result_data
 
     def create(self, data):
-        try:
-            new_director = Director(**data)
 
-            self.session.add(new_director)
-            self.session.commit()
-            return new_director
+        new_director = Director(**data)
 
-        except Exception as err:
-            print(f'Database error: {err}')
-            return 500
+        self.session.add(new_director)
+        self.session.commit()
+        return new_director
 
-    def update(self, director):
-        try:
-            self.session.add(director)
-            self.session.commit()
-            return director
+    def update(self, director, data):
 
-        except Exception as err:
-            print(f'Database error: {err}')
-            return 500
+        for k, v in data.items():
+            setattr(director, k, v)
+        self.session.add(director)
+        self.session.commit()
+        return director
 
     def delete(self, director_id: int):
-        try:
-            director = self.get_one(director_id)
-            self.session.delete(director)
-            self.session.execute('VACUUM')
-            self.session.commit()
 
-        except Exception as err:
-            print(f'Database error: {err}')
-            return 500
+        director = self.get_one(director_id)
+        self.session.delete(director)
+        self.session.commit()
