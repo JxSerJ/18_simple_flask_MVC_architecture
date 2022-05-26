@@ -16,7 +16,7 @@ class DirectorDAO:
 
     def get_one(self, director_id: int):
 
-        result_data = self.session.query(Director).get(director_id)
+        result_data = self.session.query(Director).filter(Director.id == director_id).one()
         return result_data
 
     def create(self, data):

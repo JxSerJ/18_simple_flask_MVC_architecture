@@ -4,8 +4,7 @@
 
 
 from dao.directors import DirectorDAO
-from dao.model.directors import Director, DirectorSchema
-from service.validator import validator
+from dao.model.directors import DirectorSchema
 
 director_schema = DirectorSchema()
 
@@ -16,42 +15,23 @@ class DirectorService:
 
     def get_all(self):
         result_data = self.director_dao.get_all()
-        if not result_data:
-            return {"result": f"Data not found. Empty database.", "status_code": 404}
-        return {"result": result_data, "status_code": 200}
+        return result_data
 
     def get_one(self, director_id: int):
         result_data = self.director_dao.get_one(director_id)
-        if not result_data:
-            return {"result": f"Data ID: {director_id} not found.", "status_code": 404}
-        return {"result": result_data, "status_code": 200}
+        return result_data
 
     def create(self, data):
-
-        validation_result = validator("POST", data, Director, director_schema)
-        if validation_result['is_error']:
-            return {"result": validation_result["error_message"], "status_code": validation_result["status_code"]}
-        else:
-            result_data = self.director_dao.create(data)
-            return {"result": result_data, "status_code": 201}
+        result_data = self.director_dao.create(data)
+        return result_data
 
     def update(self, director_id: int, data):
 
         director = self.director_dao.get_one(director_id)
         result_data = self.director_dao.update(director, data)
-        return {"result": result_data, "status_code": 200}
-
-    def update_partial(self, director_id: int, data):
-
-        director = self.director_dao.get_one(director_id)
-        result_data = self.director_dao.update(director, data)
-        return {"result": result_data, "status_code": 200}
+        return result_data
 
     def delete(self, director_id: int):
 
         query = self.director_dao.get_one(director_id)
-        if not query:
-            return {"result": f"Data ID: {director_id} not found.", "status_code": 404}
-        else:
-            self.director_dao.delete(director_id)
-            return {"result": f"Data ID: {director_id} was deleted successfully.", "status_code": 200}
+        self.director_dao.delete(director_id)
