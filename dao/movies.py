@@ -25,7 +25,7 @@ class MovieDAO:
 
     def get_one(self, movie_id: int):
 
-        result_data = self.session.query(Movie).get(movie_id)
+        result_data = self.session.query(Movie).filter(Movie.id == movie_id).one()
         return result_data
 
     def create(self, data):
