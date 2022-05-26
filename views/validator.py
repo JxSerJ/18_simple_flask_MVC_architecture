@@ -29,11 +29,11 @@ def validator(method: str, request_data: Any, Obj: object, Obj_schema: object) -
                                 "POST": [" full", "required"],
                                 "PATCH": ["", "available"]}
             msg = {"error": "Validation Error. Invalid structure found in request body data. "
-                                                "{} request must contain only{} dataset with valid keys for successful "
-                                                "processing. {} data keys enumerated in corresponding field"
-                                                .format(method, error_text_entry[method][0],
-                                                        error_text_entry[method][1].title()),
-                                     f"{error_text_entry[method][1]}_keys": list(movie_keys),
+                            "{} request must contain only{} dataset with valid keys for successful "
+                            "processing. {} data keys enumerated in corresponding field"
+                            .format(method, error_text_entry[method][0],
+                            error_text_entry[method][1].title()),
+                   f"{error_text_entry[method][1]}_keys": list(movie_keys),
                    "incorrect_data": messages}
 
             raise ValidationError(message=msg)
