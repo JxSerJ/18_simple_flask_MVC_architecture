@@ -16,7 +16,7 @@ class GenreDAO:
 
     def get_one(self, genre_id: int):
 
-        result_data = self.session.query(Genre).get(genre_id)
+        result_data = self.session.query(Genre).filter(Genre.id == genre_id).one()
         return result_data
 
     def create(self, data):
